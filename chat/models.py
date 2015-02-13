@@ -11,7 +11,7 @@ class User(models.Model):
 class Room(models.Model):
     """ A chat room. """
     name = models.CharField("room name", max_length=100, unique=True)
-    members = models.ManyToManyField(User)
+    members = models.ManyToManyField(User, blank=True)
 
 
 class Message(models.Model):

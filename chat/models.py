@@ -6,7 +6,6 @@ class User(models.Model):
     nick = models.CharField("user nickname", max_length=100, unique=True)
     avatar = models.URLField("avatar url", max_length=512)
     last_seen = models.DateTimeField("last time the user logged in", auto_now_add=True)
-    active = models.BooleanField("user is currently logged in", default=True)
 
 
 class Room(models.Model):

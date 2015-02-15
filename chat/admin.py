@@ -10,5 +10,5 @@ for model in dir(chat.models):
     obj = getattr(chat.models, model)
 
     # Only add actual models, not other things defined in chat.models
-    if isinstance(obj, type(models.Model)):
+    if isinstance(obj, type(models.Model)) and not obj._meta.abstract:
         admin.site.register(obj)

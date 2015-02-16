@@ -14,7 +14,7 @@ class ExtendedModel(models.Model):
         """  Update this object's data from the keyword arguments passed in.  This only updates the object in memory,
         a call to save() is still required to persist the object to the database.
         """
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
     def save(self, *args, **kwargs):
@@ -23,7 +23,7 @@ class ExtendedModel(models.Model):
         """
         try:
             # Call the models.Model save method, passing along any positional or named arguments
-            super().save(self, *args, **kwargs)
+            super().save(*args, **kwargs)
 
             # Return the save object's public representation
             return self.to_data()
@@ -40,13 +40,17 @@ class ExtendedModel(models.Model):
         """ Delete this object from the database.  Return appropriate HTTP status codes on error. """
         try:
             # Call the models.Model delete method, passing along any positional or named arguments
-            super().delete(self, *args, **kwargs)
+            super().delete(*args, **kwargs)
 
             # Return a successful HTTP response
             return HttpResponse(status=200)
 
         except django.db.Error as ex:
             # General database error
+            return HttpResponse(str(ex), status=400)
+
+        except AssertionError as ex:
+            # Django error such as "object can't be deleted because its id attribute is set to None"
             return HttpResponse(str(ex), status=400)
 
     def white_list(self):
@@ -104,3 +108,4 @@ class Message(ExtendedModel):
     user = models.ForeignKey(User)
     msg = models.CharField("message text", max_length=4000)
     timestamp = models.DateTimeField("time message sent", default=datetime.utcnow())
+

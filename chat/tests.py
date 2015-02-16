@@ -1,6 +1,5 @@
-from django.db import models
 from django.test import TestCase
-from django.core.management import call_command
+from django.http import HttpResponse
 
 from chat.models import User, Room, ExtendedModel
 
@@ -8,11 +7,12 @@ from chat.models import User, Room, ExtendedModel
 class ExtendedModelTestCase(TestCase):
 
     TEST_USER_NICK = "picard"
+    TEST_USER_AVATAR = "http://example.com"
     TEST_ROOM_NAME = "test room"
 
     def setUp(self):
-        User(nick=self.TEST_USER_NICK, avatar="http://example.com").save()
-        Room(name=self.TEST_ROOM_NAME).save()
+        User.objects.create(nick=self.TEST_USER_NICK, avatar=self.TEST_USER_AVATAR)
+        Room.objects.create(name=self.TEST_ROOM_NAME)
 
     def test_no_whitelist(self):
 
@@ -39,10 +39,46 @@ class ExtendedModelTestCase(TestCase):
         self.assertEqual(set(test_room.white_list()), set(test_room.to_data().keys()))
 
     def test_update_by_keyword(self):
-        pass
+
+        # Get the test user
+        test_user = User.objects.get(nick=self.TEST_USER_NICK)
+
+        # Update the fields by keyword
+        new_avatar = "http://newurl.com"
+        test_user.update_data(avatar=new_avatar)
+
+        # Verify that the avatar was updated
+        self.assertEqual(test_user.avatar, new_avatar)
 
     def test_save_returns_http_response(self):
-        pass
+
+        # Create a conflicting test user
+        duplicate_user = User(nick=self.TEST_USER_NICK, avatar=self.TEST_USER_AVATAR)
+
+        # Attempt to save.  Internally this will throw, but it should get wrapped in an HttpResponse
+        result = duplicate_user.save()
+
+        self.assertIsInstance(result, HttpResponse)
 
     def test_delete_returns_http_response(self):
-        pass
+
+        # Get the test user
+        test_user = User.objects.get(nick=self.TEST_USER_NICK)
+
+        # Delete the test user, this should succeed, and return an HttpResponse
+        result = test_user.delete()
+
+        self.assertIsInstance(result, HttpResponse)
+
+        # Previous delete cleared the id field.  Attempting to delete now will internally throw, but it should get
+        # wrapped in an HttpResponse
+        result = test_user.delete()
+
+        self.assertIsInstance(result, HttpResponse)
+
+        # Also try setting a bogus id and deleting
+        test_user.id = 0
+        result = test_user.delete()
+
+        self.assertIsInstance(result, HttpResponse)
+

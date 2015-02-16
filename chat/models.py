@@ -43,7 +43,7 @@ class ExtendedModel(models.Model):
             super().delete(*args, **kwargs)
 
             # Return a successful HTTP response
-            return HttpResponse(status=200)
+            return HttpResponse(status=204)
 
         except django.db.Error as ex:
             # General database error
@@ -100,6 +100,12 @@ class Room(ExtendedModel):
             'id',
             'name'
         ]
+
+    def member_data(self):
+        """ Return the member data as a json-serializable object. """
+        return {
+            "members": [member.to_data() for member in self.members]
+        }
 
 
 class Message(ExtendedModel):

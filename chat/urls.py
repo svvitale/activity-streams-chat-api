@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from chat.views import RoomView, UserView, MessageView
+from chat.views import RoomView, UserView, MessageView, MemberView
 
 urlpatterns = patterns('',
     (r'^rooms/$', RoomView.as_view()),
@@ -9,6 +9,6 @@ urlpatterns = patterns('',
     (r'^users/(?P<item_id>\d+)/$', UserView.as_view()),
     (r'^rooms/(?P<room_id>)/messages/$', MessageView.as_view()),
     (r'^rooms/(?P<room_id>)/messages/(?P<item_id>)$', MessageView.as_view()),
-    #(r'^rooms/(?P<room_id>)/members/$', MemberView.as_view()),
-    #(r'^rooms/(?P<room_id>)/members/(?P<item_id>)$', MemberView.as_view()),
+    (r'^rooms/(?P<room_id>)/members/$', MemberView.as_view()),
+    (r'^rooms/(?P<room_id>)/members/(?P<user_id>)$', MemberView.as_view()),
 )

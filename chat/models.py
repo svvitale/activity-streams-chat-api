@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.db import models
 from django.forms import model_to_dict
 import django.db
@@ -107,6 +108,16 @@ class Room(ExtendedModel):
             "members": [member.to_data() for member in self.members]
         }
 
+    def messages(self, since_msg=None, msg_count=50):
+        if since_msg:
+            query_set = self._model.objects.filter(timestamp__lt=since_msg.timestamp, room=self)
+        else:
+            query_set = self._model.objects.filter(room=self)
+
+        return {
+            "messages": [item_obj.to_data() for item_obj in query_set.order_by('-timestamp')[:msg_count]]
+        }
+
 
 class Message(ExtendedModel):
     """ An individual message in a chat room. """
@@ -114,4 +125,3 @@ class Message(ExtendedModel):
     user = models.ForeignKey(User)
     msg = models.CharField("message text", max_length=4000)
     timestamp = models.DateTimeField("time message sent", default=datetime.utcnow())
-

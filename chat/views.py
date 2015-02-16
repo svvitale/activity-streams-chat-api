@@ -14,7 +14,7 @@ class CRUDView(View):
     """
 
     @json
-    def post(self, json_data):
+    def post(self, json_data, *args, **kwargs):
         """ POST verb handler (database create).  Only supports single item creation at this time.
         :param json_data: Model attributes to use in the creation of a new database entry.
         :return: Public representation of the created model.  This may not include all model fields, depending
@@ -23,7 +23,7 @@ class CRUDView(View):
         return self._model(**json_data).save()
 
     @json
-    def get(self, json_data, item_id=None):
+    def get(self, json_data, item_id=None, *args, **kwargs):
         """ GET verb handler (database read)
         :param json_data: Not used.
         :param item_id: (optional) Unique ID of the object to retrieve.  If not specified, all objects will be returned.
@@ -38,7 +38,7 @@ class CRUDView(View):
             }
 
     @json
-    def put(self, json_data, item_id):
+    def put(self, json_data, item_id, *args, **kwargs):
         """ PUT verb handler (database update).  Only supports single item updates at this time.
         :param json_data: Dictionary of key/value pairs that should be updated on the specified object
         :param item_id: Unique ID of the object to update.
@@ -49,7 +49,7 @@ class CRUDView(View):
         return existing_item.save()
 
     @json
-    def delete(self, json_data, item_id):
+    def delete(self, json_data, item_id, *args, **kwargs):
         """ DELETE verb handler (database delete).  Only supports single item deletions at this time.
         :param json_data: Not used.
         :param item_id: Unique ID of the object to delete.
@@ -71,11 +71,17 @@ class UserView(CRUDView):
     _collection_name = "users"
 
 
-class MessageView(CRUDView):
-    """ View for the Message model.  Uses the default view implementation except for the GET verb which needs
-    the ability to retrieve 50 messages at a time. """
-    _model = Message
-    _collection_name = "messages"
+class MessageView(View):
+    """ View for the Message model.  Needs to retrieve 50 messages at a time, and no support for updates. """
+
+    @json
+    def post(self, json_data, room_id):
+        """ Add a new message to the specified room.
+        :param json_data: Message data to create
+        :param room_id: Unique ID of the room to which we're adding the message
+        :return: Message data
+        """
+        return Message.objects.create(**json_data, room=room_id).to_data()
 
     @json
     def get(self, json_data, room_id, item_id=None):
@@ -85,15 +91,19 @@ class MessageView(CRUDView):
         :param item_id: (optional) If specified, return the 50 messages prior to the message with this item_id.  If not
         :return:
         """
-        if item_id:
-            starting_msg = get_object_or_404(self._model, id=item_id)
-            query_set = self._model.objects.filter(timestamp__lt=starting_msg.timestamp, room=room_id)
-        else:
-            query_set = self._model.objects.filter(room=room_id)
+        room = get_object_or_404(Room, id=room_id)
 
-        return {
-            self._collection_name: [item_obj.to_data() for item_obj in query_set.order_by('-timestamp')[:50]]
-        }
+        if item_id:
+            starting_msg = get_object_or_404(Message, id=item_id)
+        else:
+            starting_msg = None
+
+        return room.messages(since_msg=starting_msg, msg_count=50)
+
+    @json
+    def put(self, *args, **kwargs):
+        """ Message updates are not supported. """
+        return HttpResponse("Unsupported verb: PUT", status=400)
 
 
 class MemberView(View):
@@ -135,7 +145,7 @@ class MemberView(View):
         return room.member_data()
 
     @json
-    def put(self, json_data, room_id):
+    def put(self, *args, **kwargs):
         """ Member updates are not supported. """
         return HttpResponse("Unsupported verb: PUT", status=400)
 

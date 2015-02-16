@@ -53,7 +53,7 @@ class ExtendedModel(models.Model):
         """ Whitelisted fields for this model.  By default, all fields are whitelisted.  Override this function
         to return only a subset of fields from an API call.
         """
-        return self._meta.get_all_field_names()
+        return [field.name for field in self._meta.fields]
 
     def to_data(self):
         """ Iterate over all attributes and return a native Python dictionary containing only the whitelisted

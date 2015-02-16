@@ -60,13 +60,13 @@ class CRUDView(View):
 
 
 class RoomView(CRUDView):
-    """ View for the Room model.  Uses the default view implementation. """
+    """ View for the Room model.  Uses the default CRUDView implementation. """
     _model = Room
     _collection_name = "rooms"
 
 
 class UserView(CRUDView):
-    """ View for the User model.  Uses the default view implementation. """
+    """ View for the User model.  Uses the default CRUDView implementation. """
     _model = User
     _collection_name = "users"
 

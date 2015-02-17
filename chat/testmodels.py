@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.http import HttpResponse
-
 from chat.models import User, Room, ExtendedModel
 
 
@@ -81,4 +80,3 @@ class ExtendedModelTestCase(TestCase):
         result = test_user.delete()
 
         self.assertIsInstance(result, HttpResponse)
-

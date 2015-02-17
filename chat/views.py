@@ -81,7 +81,8 @@ class MessageView(View):
         :param room_id: Unique ID of the room to which we're adding the message
         :return: Message data
         """
-        return Message.objects.create(**json_data, room=room_id).to_data()
+        json_data["room"] = room_id
+        return Message.objects.create(**json_data).to_data()
 
     @json
     def get(self, json_data, room_id, item_id=None):

@@ -31,7 +31,10 @@ class ExtendedModel(models.Model):
 
         except django.db.IntegrityError as ex:
             # Foreign or unique key error
-            return HttpResponse(str(ex), status=409)
+            if "violates not-null" in str(ex):
+                return HttpResponse(str(ex), status=400)
+            else:
+                return HttpResponse(str(ex), status=409)
 
         except django.db.Error as ex:
             # General database error
@@ -81,16 +84,20 @@ class ExtendedModel(models.Model):
         abstract = True
 
 
+def get_now():
+    return datetime.utcnow()
+
+
 class User(ExtendedModel):
     """ A global user within the chat system. """
-    nick = models.CharField("user nickname", max_length=100, unique=True)
-    avatar = models.URLField("avatar url", max_length=512)
-    last_seen = models.DateTimeField("last time the user logged in", default=datetime.utcnow())
+    nick = models.CharField("user nickname", max_length=100, unique=True, default=None)
+    avatar = models.URLField("avatar url", max_length=512, default=None, blank=True)
+    last_seen = models.DateTimeField("last time the user logged in", default=get_now)
 
 
 class Room(ExtendedModel):
     """ A chat room. """
-    name = models.CharField("room name", max_length=100, unique=True)
+    name = models.CharField("room name", max_length=100, unique=True, default=None)
     members = models.ManyToManyField(User, blank=True)
 
     def white_list(self):
@@ -109,6 +116,11 @@ class Room(ExtendedModel):
         }
 
     def messages(self, since_msg=None, msg_count=50):
+        """ Return set of messages from this room ordered by timestamp
+        :param since_msg: If specified, only get messages older than this message
+        :param msg_count: If specified, return this number of messages (defaults to 50)
+        :return: JSON-serializable object with "messages" key
+        """
         if since_msg:
             query_set = self._model.objects.filter(timestamp__lt=since_msg.timestamp, room=self)
         else:
@@ -121,7 +133,7 @@ class Room(ExtendedModel):
 
 class Message(ExtendedModel):
     """ An individual message in a chat room. """
-    room = models.ForeignKey(Room)
-    user = models.ForeignKey(User)
-    msg = models.CharField("message text", max_length=4000)
-    timestamp = models.DateTimeField("time message sent", default=datetime.utcnow())
+    room = models.ForeignKey(Room, blank=False)
+    user = models.ForeignKey(User, blank=False)
+    msg = models.CharField("message text", max_length=4000, blank=False, default=None)
+    timestamp = models.DateTimeField("time message sent", default=get_now)

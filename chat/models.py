@@ -112,7 +112,7 @@ class Room(ExtendedModel):
     def member_data(self):
         """ Return the member data as a json-serializable object. """
         return {
-            "members": [member.to_data() for member in self.members]
+            "members": [member.to_data() for member in self.members.all()]
         }
 
     def messages(self, since_msg=None, msg_count=50):
@@ -122,9 +122,9 @@ class Room(ExtendedModel):
         :return: JSON-serializable object with "messages" key
         """
         if since_msg:
-            query_set = self._model.objects.filter(timestamp__lt=since_msg.timestamp, room=self)
+            query_set = Message.objects.filter(timestamp__lt=since_msg.timestamp, room=self)
         else:
-            query_set = self._model.objects.filter(room=self)
+            query_set = Message.objects.filter(room=self)
 
         return {
             "messages": [item_obj.to_data() for item_obj in query_set.order_by('-timestamp')[:msg_count]]

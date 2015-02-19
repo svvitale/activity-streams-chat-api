@@ -81,11 +81,16 @@ class MessageView(View):
         :param room_id: Unique ID of the room to which we're adding the message
         :return: Message data
         """
-        json_data["room"] = room_id
+        json_data["room"] = get_object_or_404(Room, id=room_id)
+
+        if "user" not in json_data:
+            return HttpResponse("User is a required field", status=400)
+
+        json_data["user"] = get_object_or_404(User, id=json_data["user"])
         return Message.objects.create(**json_data).to_data()
 
     @json
-    def get(self, json_data, room_id, item_id=None):
+    def get(self, json_data, room_id, item_id=None, *args, **kwargs):
         """
         :param json_data: Not used.
         :param room_id: Unique ID of the room from which we're retrieving messages.
@@ -119,14 +124,14 @@ class MemberView(View):
         room = get_object_or_404(Room, id=room_id)
 
         # Ensure user_id was specified
-        if "user_id" not in json_data:
-            return HttpResponse("user_id is required", status=400)
+        if "user" not in json_data:
+            return HttpResponse("user is required", status=400)
 
         # Load up the specified user
-        user = get_object_or_404(User, id=json_data["user_id"])
+        user = get_object_or_404(User, id=json_data["user"])
 
         # Return an error if this user already existing in the room
-        if user in room.members:
+        if user in room.members.all():
             return HttpResponse("User is already a member of this room", status=409)
 
         # Add the user to the room, save, and return
@@ -136,12 +141,15 @@ class MemberView(View):
         return room.member_data()
 
     @json
-    def get(self, json_data, room_id):
+    def get(self, json_data, room_id, user_id=None):
         """ Get the list of members in the specified room.
         :param json_data: Not used.
         :param room_id: Room to get members from.
         :return: Object with a list of members in the specified room.
         """
+        if user_id:
+            return HttpResponse("Reading a specific member is not supported", status=400)
+
         room = get_object_or_404(Room, id=room_id)
         return room.member_data()
 
@@ -161,7 +169,7 @@ class MemberView(View):
         room = get_object_or_404(Room, id=room_id)
         user = get_object_or_404(User, id=user_id)
 
-        if user not in room.members:
+        if user not in room.members.all():
             return HttpResponse("User is not a member of this room", status=400)
 
         # Remove the user from the room, save, and return

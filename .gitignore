@@ -2,3 +2,6 @@
 .idea/workspace.xml
 __pycache__/
 .idea/fanout-chat-server.iml
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/misc.xml

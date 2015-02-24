@@ -27,8 +27,8 @@ class ViewTestBase(TestCase):
     def _create(self, *args, **kwargs):
         return self._client.post(self._get_url_with_params(*args), data=dumps(kwargs), content_type='application/json')
 
-    def _read(self, *args):
-        return self._client.get(self._get_url_with_params(*args))
+    def _read(self, *args, **kwargs):
+        return self._client.get(self._get_url_with_params(*args), data=kwargs)
 
     def _update(self, *args, **kwargs):
         return self._client.put(self._get_url_with_params(*args), data=dumps(kwargs),
@@ -313,6 +313,25 @@ class MessageViewTests(ViewTestBase):
         # Verify that the list contained in the "messages" key is equal to the number of messages we created (2).
         self.assertEqual(2, len(result_data["messages"]))
 
+    def test_get_one(self):
+        """ Test a message and reading it back individually. """
+        new_message_response1 = self._create(room=self.test_room.id, user=self.test_user.id, msg="first message ever")
+
+        # Deserialize response data so we can get the ID of the created message.
+        new_message1 = loads(new_message_response1.content.decode('utf-8'))
+
+        # Attempt to read all messages before the message with the specified ID
+        response = self._read(new_message1["id"])
+
+        # Verify an ok status
+        self.assertTrue(response.status_code, 200)
+
+        # Deserialize response data
+        result_data = loads(response.content.decode('utf-8'))
+
+        # Verify that we got back the same message.
+        self.assertDictEqual(new_message1, result_data)
+
     def test_get_previous(self):
         """ Test creating two messages and reading all messages prior to the first one (the second one basically). """
         new_message_response1 = self._create(room=self.test_room.id, user=self.test_user.id, msg="first message ever")
@@ -323,7 +342,7 @@ class MessageViewTests(ViewTestBase):
         new_message2 = loads(new_message_response2.content.decode('utf-8'))
 
         # Attempt to read all messages before the message with the specified ID
-        response = self._read(new_message2["id"])
+        response = self._read(before=new_message2["id"])
 
         # Verify an ok status
         self.assertTrue(response.status_code, 200)

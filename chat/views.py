@@ -94,17 +94,23 @@ class MessageView(View):
         """
         :param json_data: Not used.
         :param room_id: Unique ID of the room from which we're retrieving messages.
-        :param item_id: (optional) If specified, return the 50 messages prior to the message with this item_id.  If not
+        :param item_id: (optional) If specified, return the message with this item_id.
         :return:
         """
         room = get_object_or_404(Room, id=room_id)
 
+        # Return just the message specified
         if item_id:
-            starting_msg = get_object_or_404(Message, id=item_id)
-        else:
-            starting_msg = None
+            msg = get_object_or_404(Message, id=item_id, room=room)
+            return msg.to_data()
 
-        return room.messages(since_msg=starting_msg, msg_count=50)
+        if "before" in json_data:
+            msg = get_object_or_404(Message, id=json_data["before"])
+        else:
+            msg = None
+
+        # Return the last 50 messages from this room
+        return room.messages(since_msg=msg, msg_count=50)
 
     @json
     def put(self, *args, **kwargs):

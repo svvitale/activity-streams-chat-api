@@ -5,7 +5,9 @@ from json import loads
 def json(view_func):
     def wrapper(self, request, *args, **kwargs):
         # Deserialize the request body into a native dictionary
-        if request.body:
+        if request.method == "GET":
+            json_data = {k: v for k, v in request.GET.items()}
+        elif request.body:
             json_data = loads(request.body.decode('utf-8'))
         else:
             json_data = {}

@@ -2,8 +2,8 @@ from django.views.generic import View
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from chat.decorators import json
-from chat.models import Room, User, Message
+from .decorators import json
+from .models import Room, User, Message
 
 
 class CRUDView(View):

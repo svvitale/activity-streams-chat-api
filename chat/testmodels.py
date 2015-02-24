@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.http import HttpResponse
-from chat.models import User, Room, ExtendedModel
+from .models import User, Room, ExtendedModel
 
 
 class ExtendedModelTestCase(TestCase):

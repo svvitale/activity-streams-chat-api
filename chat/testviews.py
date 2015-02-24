@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from json import dumps, loads
-from chat.models import Room, User, Message
+from .models import Room, User, Message
 
 
 class ViewTestBase(TestCase):

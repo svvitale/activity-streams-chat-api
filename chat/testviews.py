@@ -453,7 +453,7 @@ class MemberViewTests(ViewTestBase):
         self.assertEqual(2, len(result_data["members"]))
 
     def test_get_one(self):
-        """ Test creating two members and reading all members prior to the first one (the second one basically). """
+        """ Test creating one member and attempting to read it back (not supported). """
         self._create(user=self.test_user1.id)
 
         # Attempt to read one member with the specified ID

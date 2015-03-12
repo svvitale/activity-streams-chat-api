@@ -45,8 +45,8 @@ class ExtendedModel(models.Model):
             # Call the models.Model delete method, passing along any positional or named arguments
             super().delete(*args, **kwargs)
 
-            # Return a successful HTTP response
-            return HttpResponse(status=204)
+            # Return the data that was deleted
+            return self.to_data()
 
         except django.db.Error as ex:
             # General database error

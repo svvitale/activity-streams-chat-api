@@ -2,7 +2,7 @@ from django.views.generic import View
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from .decorators import json
+from .decorators import json, room_stream_subscriber, room_stream_publisher
 from .models import Room, User, Message
 
 
@@ -73,7 +73,11 @@ class UserView(CRUDView):
 
 class MessageView(View):
     """ View for the Message model.  Needs to retrieve 50 messages at a time, and no support for updates. """
+    @staticmethod
+    def _stream_name(room_id):
+        return 'messages-' + room_id
 
+    @room_stream_publisher
     @json
     def post(self, json_data, room_id):
         """ Add a new message to the specified room.
@@ -89,6 +93,7 @@ class MessageView(View):
         json_data["user"] = get_object_or_404(User, id=json_data["user"])
         return Message.objects.create(**json_data).to_data()
 
+    @room_stream_subscriber
     @json
     def get(self, json_data, room_id, item_id=None, *args, **kwargs):
         """
@@ -112,7 +117,6 @@ class MessageView(View):
         # Return the last 50 messages from this room
         return room.messages(since_msg=msg, msg_count=50)
 
-    @json
     def put(self, *args, **kwargs):
         """ Message updates are not supported. """
         return HttpResponse("Unsupported verb: PUT", status=400)
@@ -120,6 +124,11 @@ class MessageView(View):
 
 class MemberView(View):
 
+    @staticmethod
+    def _stream_name(room_id):
+        return 'members-' + room_id
+
+    @room_stream_publisher
     @json
     def post(self, json_data, room_id):
         """ Add a member to the specified room.
@@ -146,6 +155,7 @@ class MemberView(View):
 
         return room.member_data()
 
+    @room_stream_subscriber
     @json
     def get(self, json_data, room_id, user_id=None):
         """ Get the list of members in the specified room.
@@ -159,11 +169,11 @@ class MemberView(View):
         room = get_object_or_404(Room, id=room_id)
         return room.member_data()
 
-    @json
     def put(self, *args, **kwargs):
         """ Member updates are not supported. """
         return HttpResponse("Unsupported verb: PUT", status=400)
 
+    @room_stream_publisher
     @json
     def delete(self, json_data, room_id, user_id):
         """ Remove a user from the specified room
@@ -182,4 +192,4 @@ class MemberView(View):
         room.members.remove(user)
         room.save()
 
-        return HttpResponse(status=204)
+        return user.to_data()

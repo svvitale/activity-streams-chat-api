@@ -64,19 +64,13 @@ class ExtendedModelTestCase(TestCase):
         # Get the test user
         test_user = User.objects.get(nick=self.TEST_USER_NICK)
 
-        # Delete the test user, this should succeed, and return an HttpResponse
+        # Delete the test user, this should succeed, and return the user that was deleted.
         result = test_user.delete()
 
-        self.assertIsInstance(result, HttpResponse)
+        self.assertEqual(result, test_user.to_data())
 
         # Previous delete cleared the id field.  Attempting to delete now will internally throw, but it should get
         # wrapped in an HttpResponse
-        result = test_user.delete()
-
-        self.assertIsInstance(result, HttpResponse)
-
-        # Also try setting a bogus id and deleting
-        test_user.id = 0
         result = test_user.delete()
 
         self.assertIsInstance(result, HttpResponse)

@@ -39,11 +39,20 @@ Preliminary API for an Activity Streams-based chat application
 ### Create a user [POST]
 + Request (application/json)
 
-        { "name": "Leonard Nimoy", "avatar": "http://image.link" }
+        { "displayName": "Leonard Nimoy", "image": "http://image.link" }
 
 + Response 201 (application/json)
 
-        { "id": 3, "name": "Leonard Nimoy", "avatar": "http://image.link" }
+        {
+            "@type": "Person",
+            "@id": "urn:activity-streams-chat:person:3"
+            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+            "displayName": "Leonard Nimoy", 
+            "image": {
+                "@type": "Link",
+                "href": "http://image.link"
+            }
+        }
 
 ## User [/users/{user_id}]
 
@@ -53,16 +62,34 @@ Preliminary API for an Activity Streams-based chat application
 ### Get a user's details [GET]
 + Response 200 (application/json)
 
-        { "id": 3, "name": "Leonard Nimoy", "avatar": "http://image.link" }
+        {
+            "@type": "Person",
+            "@id": "urn:activity-streams-chat:person:3"
+            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+            "displayName": "Leonard Nimoy", 
+            "image": {
+                "@type": "Link",
+                "href": "http://image.link"
+            }
+        }
 
 ### Update a user [PUT]
 + Request (application/json)
 
-        { "name": "Leonard Simon Nimoy" }
+        { "displayName": "Leonard Simon Nimoy" }
 
 + Response 200
 
-        { "id": 3, "name": "Leonard Simon Nimoy", "avatar": "http://image.link" }
+        {
+            "@type": "Person",
+            "@id": "urn:activity-streams-chat:person:3"
+            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+            "displayName": "Leonard Simon Nimoy", 
+            "image": {
+                "@type": "Link",
+                "href": "http://image.link"
+            }
+        }
 
 ### Delete a user [DELETE]
 + Response 204

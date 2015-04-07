@@ -9,37 +9,40 @@ Preliminary API for an Activity Streams-based chat application
 + Response 200 (application/json)
 
         {
-                "@context": "https://activity-streams-chat-api.herokuapp.com/api",
-                "totalItems": 2,
-                "itemsPerPage": 2,
-                "items": [
-                        {
-                            "@type": "Person",
-                            "@id": "urn:activity-streams-chat:person:1"
-                            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/1"
-                            "displayName": "William Shatner", 
-                            "image": {
-                                "@type": "Link",
-                                "href": "http://shatner.gif"
-                            }
-                        },
-                        {
-                            "@type": "Person",
-                            "@id": "urn:activity-streams-chat:person:2"
-                            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/2"
-                            "displayName": "George Takei", 
-                            "image": {
-                                "@type": "Link",
-                                "href": "http://takei.gif"
-                            }
-                        },
-                ]
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "totalItems": 2,
+            "itemsPerPage": 2,
+            "items": [
+                {
+                    "@type": "Person",
+                    "@id": "urn:activity-streams-chat:person:1"
+                    "url": "https://activity-streams-chat-api.herokuapp.com/api/users/1"
+                    "displayName": "William Shatner", 
+                    "image": {
+                        "@type": "Link",
+                        "href": "http://shatner.gif"
+                    }
+                },
+                {
+                    "@type": "Person",
+                    "@id": "urn:activity-streams-chat:person:2"
+                    "url": "https://activity-streams-chat-api.herokuapp.com/api/users/2"
+                    "displayName": "George Takei", 
+                    "image": {
+                        "@type": "Link",
+                        "href": "http://takei.gif"
+                    }
+                }
+            ]
         }
 
 ### Create a user [POST]
 + Request (application/json)
 
-        { "displayName": "Leonard Nimoy", "image": "http://image.link" }
+        { 
+            "displayName": "Leonard Nimoy", 
+            "image": "http://image.link" 
+        }
 
 + Response 201 (application/json)
 
@@ -53,6 +56,35 @@ Preliminary API for an Activity Streams-based chat application
                 "href": "http://image.link"
             }
         }
+
+## Current User [/users/me]
+
+### Update current user [PUT]
++ Request (application/json)
+
+        { 
+            "displayName": "Leonard Simon Nimoy" 
+        }
+
++ Response 200
+
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Update",
+            "object": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Simon Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            }
+        }
+
+### Delete current user [DELETE]
++ Response 204
 
 ## User [/users/{user_id}]
 
@@ -63,6 +95,7 @@ Preliminary API for an Activity Streams-based chat application
 + Response 200 (application/json)
 
         {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
             "@type": "Person",
             "@id": "urn:activity-streams-chat:person:3"
             "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
@@ -73,113 +106,219 @@ Preliminary API for an Activity Streams-based chat application
             }
         }
 
-### Update a user [PUT]
-+ Request (application/json)
-
-        { "displayName": "Leonard Simon Nimoy" }
-
-+ Response 200
-
-        {
-            "@type": "Person",
-            "@id": "urn:activity-streams-chat:person:3"
-            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
-            "displayName": "Leonard Simon Nimoy", 
-            "image": {
-                "@type": "Link",
-                "href": "http://image.link"
-            }
-        }
-
-### Delete a user [DELETE]
-+ Response 204
-
 ## Rooms Collection [/rooms]
+
 ### List all rooms [GET]
 + Response 200 (application/json)
 
         {
-                "rooms": [
-                        { "id": 1, "name": "Klingon Kar Talk" },
-                        { "id": 2, "name": "Deep Space Forty Niners" }
-                ]
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "totalItems": 2,
+            "itemsPerPage": 2,
+            "items": [
+                {
+                    "@type": "Community",
+                    "@id": "urn:activity-streams-chat:community:1"
+                    "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/1"
+                    "displayName": "Klingon Kar Talk", 
+                },
+                {
+                    "@type": "Community",
+                    "@id": "urn:activity-streams-chat:community:2"
+                    "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/2"
+                    "displayName": "Deep Space Forty Niners", 
+                }
+            ]
         }
 
 ### Create a room [POST]
 + Request (application/json)
 
-        { "name": "Romulan battle plans" }
+        {
+            "displayName": "Sushi Plans" 
+        }
 
 + Response 201 (application/json)
 
-        { "id": 3, "name": "Romulan battle plans" }
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Create",
+            "actor": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Simon Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            },
+            "object": {
+                "@type": "Community",
+                "@id": "urn:activity-streams-chat:community:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/3"
+                "displayName": "Sushi Plans", 
+            }
+        }
 
 ## Room [/rooms/{room_id}]
 
 + Parameters
-    + room_id (required, number, `2`) ... Numeric `id` of the Room to perform action on.
+    + room_id (required, number, `3`) ... Numeric `id` of the Room to perform action on.
 
 ### Retrieve a room's details [GET]
 + Response 200 (application/json)
 
-        { "id": 2, "name": "Deep Space Forty Niners" }
+        {
+            "@type": "Community",
+            "@id": "urn:activity-streams-chat:community:3"
+            "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/3"
+            "displayName": "Sushi Plans", 
+        }
 
 ### Rename a room [PUT]
 + Request (application/json)
 
-        { "name": "Deep Space Forty Tenors" }
+        { 
+            "displayName": "Friday Sushi Plans"
+        }
 
 + Response 200
 
-        { "id": 2, "name": "Deep Space Forty Tenors" }
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Update",
+            "actor": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Simon Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            },
+            "object": {
+                "@type": "Community",
+                "@id": "urn:activity-streams-chat:community:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/3"
+                "displayName": "Friday Sushi Plans", 
+            }
+        }
 
 ### Delete a room [DELETE]
-+ Response 204
++ Response 200
+
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Delete",
+            "actor": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Simon Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            },
+            "object": {
+                "@type": "Community",
+                "@id": "urn:activity-streams-chat:community:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/3"
+                "displayName": "Friday Sushi Plans", 
+            }
+        }
 
 ## Members Collection [/rooms/{room_id}/members]
 The members that exist in a specified room
 
 + Parameters
-    + room_id (required, number, `1`) ... Numeric `id` of the Room to perform action on.
+    + room_id (required, number, `3`) ... Numeric `id` of the Room to perform action on.
     
 ### Retrieve the list of members in the room [GET]
 + Response 200 (application/json)
 
-        { 
-            "members": [
-                    { "id": 1, "name": "William Shatner", "avatar": "http://shatner.gif" },
-                    { "id": 2, "name": "George Takei", "avatar": "http://takei.gif" }
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "totalItems": 2,
+            "itemsPerPage": 2,
+            "items": [
+                {
+                    "@type": "Person",
+                    "@id": "urn:activity-streams-chat:person:1"
+                    "url": "https://activity-streams-chat-api.herokuapp.com/api/users/1"
+                    "displayName": "William Shatner", 
+                    "image": {
+                        "@type": "Link",
+                        "href": "http://shatner.gif"
+                    }
+                },
+                {
+                    "@type": "Person",
+                    "@id": "urn:activity-streams-chat:person:2"
+                    "url": "https://activity-streams-chat-api.herokuapp.com/api/users/2"
+                    "displayName": "George Takei", 
+                    "image": {
+                        "@type": "Link",
+                        "href": "http://takei.gif"
+                    }
+                }
             ]
         }
 
 ### Join a room [POST]
-+ Request (application/json)
-
-        { "user_id": 3 }
-        
 + Response 201 (application/json)
 
-        { 
-            "members": [
-                    { "id": 1, "name": "William Shatner", "avatar": "http://shatner.gif" },
-                    { "id": 2, "name": "George Takei", "avatar": "http://takei.gif" }
-                    { "id": 3, "name": "Leonard Nimoy", "avatar": "http://image.link" }
-            ]
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Join",
+            "actor": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            },
+            "object": {
+                "@type": "Community",
+                "@id": "urn:activity-streams-chat:community:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/3"
+                "displayName": "Romulan battle plans", 
+            }
         }
 
-## Member [/rooms/{room_id}/members/{user_id}]
-
-+ Parameters
-    + room_id (required, number, `1`) ... Numeric `id` of the Room to perform action on.
-    + user_id (required, number, `1`) ... Numeric `id` of the User to perform action on.
-
 ### Leave a room [DELETE]
-+ Response 204
++ Response 200 (application/json)
+
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Leave",
+            "actor": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            },
+            "object": {
+                "@type": "Community",
+                "@id": "urn:activity-streams-chat:community:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/rooms/3"
+                "displayName": "Romulan battle plans", 
+            }
+        }
 
 ## Messages Collection [/rooms/{room_id}/messages{?before}]
 
 + Parameters
-    + room_id (required, number, `1`) ... Numeric `id` of the Room get the messages from.
+    + room_id (required, number, `3`) ... Numeric `id` of the Room get the messages from.
 
 ### Retrieve 50 messages in a room [GET]
 + Parameters
@@ -187,28 +326,72 @@ The members that exist in a specified room
 
 + Response 200 (application/json)
 
-        { 
-            "messages": [
-                    { "id": 5, "user_id": 3, "msg": "I can't wait to blow those humans to smithereens!", "timestamp": "2015-02-11T07:37:02.321Z" },
-                    { "id": 6, "user_id": 2, "msg": "Yeah, it's going to be awesome!", "timestamp": "2015-02-11T07:37:04.123Z" }
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "totalItems": 2,
+            "itemsPerPage": 2,
+            "items": [
+                {
+                    "@type": "Post",
+                    "actor": {
+                        "@type": "Person",
+                        "@id": "urn:activity-streams-chat:person:3"
+                        "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                        "displayName": "Leonard Nimoy", 
+                        "image": {
+                            "@type": "Link",
+                            "href": "http://image.link"
+                        }
+                    },
+                    "object": { 
+                        "@type": "Note",
+                        "content": "Hey Sulu, up for sushi tonight?"
+                    }
+                }
+                {
+                    "@type": "Post",
+                    "actor": {
+                        "@type": "Person",
+                        "@id": "urn:activity-streams-chat:person:2"
+                        "url": "https://activity-streams-chat-api.herokuapp.com/api/users/2"
+                        "displayName": "George Takei", 
+                        "image": {
+                            "@type": "Link",
+                            "href": "http://takei.gif"
+                        }
+                    },
+                    "object": { 
+                        "@type": "Note",
+                        "content": "Yeah, I'm always up for some good toro!"
+                    }
+                }
             ]
         }
 
 ### Create a message [POST]
 + Request (application/json)
 
-        { }
+        { 
+            "content": "Meet at 7?"
+        }
         
 + Response 201 (application/json)
 
-        { }
-
-## Message [/rooms/{room_id}/messages/{message_id}]
-
-+ Parameters
-    + room_id (required, number, `1`) ... Numeric `id` of the Room to perform action on.
-    + message_id (required, number, `1`) ... Numeric `id` of the Message to perform action on.
-
-### Delete a message [DELETE]
-+ Response 204
-
+        {
+            "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+            "@type": "Post",
+            "actor": {
+                "@type": "Person",
+                "@id": "urn:activity-streams-chat:person:3"
+                "url": "https://activity-streams-chat-api.herokuapp.com/api/users/3"
+                "displayName": "Leonard Nimoy", 
+                "image": {
+                    "@type": "Link",
+                    "href": "http://image.link"
+                }
+            },
+            "object": { 
+                "@type": "Note",
+                "content": "Meet at 7?"
+            }
+        }

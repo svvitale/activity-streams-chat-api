@@ -1,0 +1,187 @@
+FORMAT: 1A
+
+# Activity Streams Chat API
+Preliminary API for an Activity Streams-based chat application
+
+## Users Collection [/users]
+
+### List all users [GET]
++ Response 200 (application/json)
+
+        {
+                "@context": "https://activity-streams-chat-api.herokuapp.com/api",
+                "totalItems": 2,
+                "itemsPerPage": 2,
+                "items": [
+                        {
+                            "@type": "Person",
+                            "@id": "urn:activity-streams-chat:person:1"
+                            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/1"
+                            "displayName": "William Shatner", 
+                            "image": {
+                                "@type": "Link",
+                                "href": "http://shatner.gif"
+                            }
+                        },
+                        {
+                            "@type": "Person",
+                            "@id": "urn:activity-streams-chat:person:2"
+                            "url": "https://activity-streams-chat-api.herokuapp.com/api/users/2"
+                            "displayName": "George Takei", 
+                            "image": {
+                                "@type": "Link",
+                                "href": "http://takei.gif"
+                            }
+                        },
+                ]
+        }
+
+### Create a user [POST]
++ Request (application/json)
+
+        { "name": "Leonard Nimoy", "avatar": "http://image.link" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "name": "Leonard Nimoy", "avatar": "http://image.link" }
+
+## User [/users/{user_id}]
+
++ Parameters
+    + user_id (required, number, `3`) ... Numeric `id` of the User to perform action on.
+
+### Get a user's details [GET]
++ Response 200 (application/json)
+
+        { "id": 3, "name": "Leonard Nimoy", "avatar": "http://image.link" }
+
+### Update a user [PUT]
++ Request (application/json)
+
+        { "name": "Leonard Simon Nimoy" }
+
++ Response 200
+
+        { "id": 3, "name": "Leonard Simon Nimoy", "avatar": "http://image.link" }
+
+### Delete a user [DELETE]
++ Response 204
+
+## Rooms Collection [/rooms]
+### List all rooms [GET]
++ Response 200 (application/json)
+
+        {
+                "rooms": [
+                        { "id": 1, "name": "Klingon Kar Talk" },
+                        { "id": 2, "name": "Deep Space Forty Niners" }
+                ]
+        }
+
+### Create a room [POST]
++ Request (application/json)
+
+        { "name": "Romulan battle plans" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "name": "Romulan battle plans" }
+
+## Room [/rooms/{room_id}]
+
++ Parameters
+    + room_id (required, number, `2`) ... Numeric `id` of the Room to perform action on.
+
+### Retrieve a room's details [GET]
++ Response 200 (application/json)
+
+        { "id": 2, "name": "Deep Space Forty Niners" }
+
+### Rename a room [PUT]
++ Request (application/json)
+
+        { "name": "Deep Space Forty Tenors" }
+
++ Response 200
+
+        { "id": 2, "name": "Deep Space Forty Tenors" }
+
+### Delete a room [DELETE]
++ Response 204
+
+## Members Collection [/rooms/{room_id}/members]
+The members that exist in a specified room
+
++ Parameters
+    + room_id (required, number, `1`) ... Numeric `id` of the Room to perform action on.
+    
+### Retrieve the list of members in the room [GET]
++ Response 200 (application/json)
+
+        { 
+            "members": [
+                    { "id": 1, "name": "William Shatner", "avatar": "http://shatner.gif" },
+                    { "id": 2, "name": "George Takei", "avatar": "http://takei.gif" }
+            ]
+        }
+
+### Join a room [POST]
++ Request (application/json)
+
+        { "user_id": 3 }
+        
++ Response 201 (application/json)
+
+        { 
+            "members": [
+                    { "id": 1, "name": "William Shatner", "avatar": "http://shatner.gif" },
+                    { "id": 2, "name": "George Takei", "avatar": "http://takei.gif" }
+                    { "id": 3, "name": "Leonard Nimoy", "avatar": "http://image.link" }
+            ]
+        }
+
+## Member [/rooms/{room_id}/members/{user_id}]
+
++ Parameters
+    + room_id (required, number, `1`) ... Numeric `id` of the Room to perform action on.
+    + user_id (required, number, `1`) ... Numeric `id` of the User to perform action on.
+
+### Leave a room [DELETE]
++ Response 204
+
+## Messages Collection [/rooms/{room_id}/messages{?before}]
+
++ Parameters
+    + room_id (required, number, `1`) ... Numeric `id` of the Room get the messages from.
+
+### Retrieve 50 messages in a room [GET]
++ Parameters
+    + before (optional, number) ... If specified, get the 50 messages prior to this message id, if null, gets the most recent 50 messages
+
++ Response 200 (application/json)
+
+        { 
+            "messages": [
+                    { "id": 5, "user_id": 3, "msg": "I can't wait to blow those humans to smithereens!", "timestamp": "2015-02-11T07:37:02.321Z" },
+                    { "id": 6, "user_id": 2, "msg": "Yeah, it's going to be awesome!", "timestamp": "2015-02-11T07:37:04.123Z" }
+            ]
+        }
+
+### Create a message [POST]
++ Request (application/json)
+
+        { }
+        
++ Response 201 (application/json)
+
+        { }
+
+## Message [/rooms/{room_id}/messages/{message_id}]
+
++ Parameters
+    + room_id (required, number, `1`) ... Numeric `id` of the Room to perform action on.
+    + message_id (required, number, `1`) ... Numeric `id` of the Message to perform action on.
+
+### Delete a message [DELETE]
++ Response 204
+
